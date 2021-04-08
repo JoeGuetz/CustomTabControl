@@ -23,7 +23,11 @@ namespace System.Windows.Forms
 
 			HotTrack = true;
 
-			// Must set after the _Overlap as this is used in the calculations of the actual padding
+            // Must set after the _Overlap as this is used in the calculations of the actual padding
+            _Overlap = 0;
+            _FocusTrack = false;
+            _Radius = 2;
+            _Opacity = 1;
 			Padding = new Point(6, 3);
 		}
 
@@ -50,7 +54,15 @@ namespace System.Windows.Forms
 					provider = new TabStyleDarkProvider(tabControl);
 					break;
 
-				default:
+                case TabStyle.Rounded:
+                    provider = new TabStyleRoundedProvider(tabControl);
+                    break;
+
+                case TabStyle.VisualStudio:
+                    provider = new TabStyleVisualStudioProvider(tabControl);
+                    break;
+
+                default:
 					provider = new TabStyleDefaultProvider(tabControl);
 					break;
 			}
@@ -68,11 +80,11 @@ namespace System.Windows.Forms
 		protected bool _HotTrack;
 		protected TabStyle _Style = TabStyle.Default;
 		protected ContentAlignment _ImageAlign;
-		protected int _Radius = 2;
-		protected int _Overlap;
-		protected bool _FocusTrack;
+		protected int _Radius = 0;
+		protected int _Overlap = 0;
+		protected bool _FocusTrack = false;
 		protected float _Opacity = 1;
-		protected bool _ShowTabCloser;
+		protected bool _ShowTabCloser = false;
 		protected Color _BorderColorSelected = Color.Empty;
 		protected Color _BorderColor = Color.Empty;
 		protected Color _BorderColorHot = Color.Empty;
@@ -311,7 +323,7 @@ namespace System.Windows.Forms
 			}
 		}
 
-		[Category("Appearance"), DefaultValue(1), Browsable(true)]
+		[Category("Appearance"), DefaultValue(1), Browsable(false)]
 		public int Radius
 		{
 			get { return _Radius; }
@@ -319,13 +331,12 @@ namespace System.Windows.Forms
 			{
 				if (value < 1)
 					throw new ArgumentException("The radius must be greater than 1", "value");
-
 				_Radius = value;
 				Padding = _Padding;
 			}
 		}
 
-		[Category("Appearance")]
+		[Category("Appearance"), Browsable(false)]
 		public int Overlap
 		{
 			get { return _Overlap; }
